@@ -13,7 +13,7 @@
         @load="loadingTrailer = false"
       ></iframe>
       <div class="filme_container">
-        <img :src="filme.picture" class="img_capa" />
+        <img :src="filme.image" class="img_capa" />
         <div class="informacoes">
           <h2>{{ filme.title }}</h2>
           <p>Categoria: {{ formatarCategoria(filme.category) }}</p>
@@ -28,8 +28,6 @@
 </template>
 
 <script>
-import ApiFilmes from "../service/ApiFilmes";
-
 export default {
   name: "FilmeSelecionado",
   computed: {
@@ -49,8 +47,13 @@ export default {
   methods: {
     async fetchFilme() {
       try {
-        const response = await ApiFilmes.getMovieById(this.id);
-        this.filme = response.data;
+        const response = require("/public/movies.json");
+        const filmeEncontrado = response.find((filme) => filme.id === this.id);
+        if (filmeEncontrado) {
+          this.filme = filmeEncontrado;
+        } else {
+          console.error("Filme não encontrado!");
+        }
         this.loadingTrailer = false;
       } catch (error) {
         this.loadingTrailer = false;
@@ -109,8 +112,8 @@ export default {
 .trailer {
   width: 100%;
   height: 380px;
-  border: none; /* Remove a borda do iframe */
-  object-fit: cover; /* Preenche o espaço mantendo a proporção */
+  border: none;
+  object-fit: cover;
 }
 
 .filme_container {
@@ -131,9 +134,8 @@ export default {
   border-radius: 20px;
   border: 1px solid red;
   padding: 3%;
-
-  h2 {
-    color: red;
-  }
+}
+h2 {
+  color: red;
 }
 </style>

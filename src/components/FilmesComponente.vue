@@ -8,7 +8,7 @@
       <h2>{{ obj.title }}</h2>
       <div class="img_container">
         <RouterLink :to="{ name: 'descricaoFilme', params: { id: obj.id } }">
-          <img :src="obj.picture" class="img_capa" />
+          <img :src="obj.image" class="img_capa" />
         </RouterLink>
         <img
           v-if="!obj.favorito"
@@ -33,8 +33,6 @@
 </template>
 
 <script>
-import ApiFilmes from "../service/ApiFilmes";
-
 export default {
   name: "filmesComponente",
 
@@ -42,6 +40,15 @@ export default {
     return {
       listFilmes: [],
     };
+  },
+
+  mounted() {
+    fetch("/movies.json")
+      .then((response) => response.json())
+      .then((data) => {
+        this.listFilmes = data;
+      })
+      .catch((error) => console.error("Erro ao carregar filmes:", error));
   },
 
   methods: {
@@ -56,20 +63,6 @@ export default {
         filme.favorito = !filme.favorito;
       }
     },
-  },
-
-  async created() {
-    try {
-      const response = await ApiFilmes.getMovies();
-      const lista = response.data.map((filme) => ({
-        ...filme,
-        favorito: false,
-      }));
-      this.listFilmes = lista;
-      console.log(lista);
-    } catch (error) {
-      console.error("Erro ao buscar filmes:", error);
-    }
   },
 };
 </script>
@@ -105,17 +98,16 @@ export default {
   display: flex;
   flex-direction: column;
   width: 300px;
-
-  h2 {
-    color: rgb(245, 217, 217);
-    font-family: "Montserrat", sans-serif;
-  }
-  p {
-    color: #fff;
-    margin: 7px;
-  }
 }
 
+h2 {
+  color: rgb(245, 217, 217);
+  font-family: "Montserrat", sans-serif;
+}
+p {
+  color: #fff;
+  margin: 7px;
+}
 /* Ajusta o posicionamento e o z-index da imagem sobreposta */
 .img_container {
   position: relative;
